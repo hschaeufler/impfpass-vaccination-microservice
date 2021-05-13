@@ -1,8 +1,8 @@
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 
-async function createConnection(){
+function getConnection(){
     // create the connection to database
-    const connection = await mysql.createConnection({
+    const connection = mysql.createConnection({
         host: 'localhost',
         user: 'root',
         password: 'root',
@@ -11,4 +11,18 @@ async function createConnection(){
     return connection;
 }
 
-module.exports = {}
+function createPool(){
+    // create the connection to database
+    const pool = mysql.createPool({
+        host: 'localhost',
+        user: 'root',
+        password: 'root',
+        database: 'vacbook',
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0
+    });
+    return pool;
+}
+
+module.exports = {getConnection, createPool}
