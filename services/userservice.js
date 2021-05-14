@@ -6,18 +6,25 @@ const pool = db.createPool();
 const promisePool = pool.promise();
 
 async function saveUser(user) {
-    if(!(user && user.mail && user.password && user.name && user.role && user.officename && user.ort)){
+    if(!(user && user.mail && user.password && user.firstName && user.lastName && user.place)){
         throw "Please check that all required fields of User are set";
     }
 
-    const officename = user.officename ? user.officename : null;
+    if(user.isDoctor && !user.officeName){
+        throw "Please submit an Officename if you are a Doctor!";
+    }
+
+    const officename = user.officeName ? user.officeName : null;
+    const role = user.isDoctor ? "DOCTOR" : "USER";
     const passwordHash = await bcrypt.hash(user.password, SALT_ROUNDS);
 
-    const VALUES = [user.mail,passwordHash,user.name ,user.role,officename,user.ort];
+    const VALUES = [user.mail,passwordHash,user.lastName, user.firstName ,role,officename,user.place];
+
+    console.log(VALUES)
 
     const connection = await promisePool.getConnection();
     try {
-        const [rows, fields] = await connection.execute("INSERT INTO  user (mail, password, name, role, officename, ort) VALUES (?, ?, ?, ?, ?, ?)", VALUES);
+        const [rows, fields] = await connection.execute("INSERT INTO  user (mail, password, lastname, firstname, role, officename, ort) VALUES (?, ?, ?, ?, ?, ?, ?)", VALUES);
         console.log(rows);
         console.log(fields);
         return rows.insertId;
@@ -60,7 +67,7 @@ async function getUser(mail) {
 
     const connection = await promisePool.getConnection();
     try {
-        const [results, fields] = await connection.execute("SELECT mail, name, role, officename, ort FROM  user WHERE mail = ?", VALUES);
+        const [results, fields] = await connection.execute("SELECT mail, lastname, firstname, role, officename, ort FROM  user WHERE mail = ?", VALUES);
 
         if(!results || results.length < 1){
             return null;
@@ -68,7 +75,8 @@ async function getUser(mail) {
 
         const user = {
             mail : results[0].mail,
-            name: results[0].name,
+            lastname: results[0].lastname,
+            firstname: results[0].firstname,
             role: results[0].role,
             officename: results[0].officename,
             ort: results[0].ort
