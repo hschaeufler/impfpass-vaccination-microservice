@@ -3,12 +3,13 @@ const passport = require('passport');
 const registerRoute = require("./routes/register");
 const loginRoute = require("./routes/login");
 const userRoute = require("./routes/user");
+const testRoute = require("./routes/test");
 const {localLoginStrategy,JWTStrategy} = require("./auth/auth");
 
 
 //app Septup
 const app = express();
-const port = 3001;
+const port = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -17,9 +18,9 @@ app.use(passport.initialize());
 passport.use("login", localLoginStrategy);
 passport.use("jwt", JWTStrategy);
 
-
-app.use("/register", registerRoute);
-app.use("/login", loginRoute);
+app.use("/", testRoute);
+app.use("/api/register", registerRoute);
+app.use("/api/login", loginRoute);
 app.use("/api/user", passport.authenticate("jwt", { session: false }), userRoute);
 
 app.listen(port, ()=> {
