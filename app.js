@@ -3,12 +3,14 @@ const passport = require('passport');
 const registerRoute = require("./routes/register");
 const loginRoute = require("./routes/login");
 const userRoute = require("./routes/user");
+const {port} = require("./config");
 const {localLoginStrategy,JWTStrategy} = require("./auth/auth");
 
 
 //app Septup
 const app = express();
-const port = 3001;
+
+console.log(`Vac-Book-Backend listening at process.env.PORT`+JSON.stringify(process.env));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
