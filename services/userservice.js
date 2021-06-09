@@ -1,12 +1,13 @@
 const db = require("../utils/database");
 const bcrypt = require("bcrypt");
+const {UserRole} = require("../model/Enum");
 
 const SALT_ROUNDS = 10;
 const pool = db.createPool();
 const promisePool = pool.promise();
 
 async function saveUser(user) {
-    if(!(user && user.mail && user.password && user.firstName && user.lastName && user.place)){
+    if(!(user && user.mail && user.password && user.firstName && user.lastName && user.location)){
         throw "Please check that all required fields of User are set";
     }
 
@@ -15,16 +16,16 @@ async function saveUser(user) {
     }
 
     const officename = user.officeName ? user.officeName : null;
-    const role = user.isDoctor ? "DOCTOR" : "USER";
+    const role = user.isDoctor ? UserRole.doctor : UserRole.user;
     const passwordHash = await bcrypt.hash(user.password, SALT_ROUNDS);
 
-    const VALUES = [user.mail,passwordHash,user.lastName, user.firstName ,role,officename,user.place];
+    const VALUES = [user.mail,passwordHash,user.lastName, user.firstName ,role,officename,user.location];
 
     console.log(VALUES)
 
     const connection = await promisePool.getConnection();
     try {
-        const [rows, fields] = await connection.execute("INSERT INTO  user (mail, password, lastname, firstname, role, officename, ort) VALUES (?, ?, ?, ?, ?, ?, ?)", VALUES);
+        const [rows, fields] = await connection.execute("INSERT INTO  user (mail, password, lastname, firstname, role, officename, location) VALUES (?, ?, ?, ?, ?, ?, ?)", VALUES);
         console.log(rows);
         console.log(fields);
         return rows.insertId;
@@ -67,19 +68,20 @@ async function getUser(mail) {
 
     const connection = await promisePool.getConnection();
     try {
-        const [results, fields] = await connection.execute("SELECT mail, lastname, firstname, role, officename, ort FROM  user WHERE mail = ?", VALUES);
+        const [results, fields] = await connection.execute("SELECT userid, mail, lastname, firstname, role, officename, location FROM  user WHERE mail = ?", VALUES);
 
         if(!results || results.length < 1){
             return null;
         }
 
         const user = {
+            userid: results[0].userid,
             mail : results[0].mail,
             lastname: results[0].lastname,
             firstname: results[0].firstname,
             role: results[0].role,
             officename: results[0].officename,
-            ort: results[0].ort
+            location: results[0].location,
         }
 
         return user;

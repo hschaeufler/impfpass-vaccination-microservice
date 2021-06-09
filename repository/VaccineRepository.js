@@ -16,7 +16,7 @@ function mapResultToVaccine(result) {
     return vaccine;
 }
 
-async function getVaccine(name) {
+async function findByName(name) {
     const values = [name];
     let vaccine = null;
 
@@ -35,7 +35,7 @@ async function getVaccine(name) {
     }
 }
 
-async function getVaccines() {
+async function findAll() {
     let vaccines = [];
 
     const connection = await promisePool.getConnection();
@@ -44,7 +44,6 @@ async function getVaccines() {
 
         if(results && results.length > 0){
             _.forEach(results,(result) => {
-                console.log(result);
                 const vaccine = mapResultToVaccine(result);
                 vaccines.push(vaccine);
             });
@@ -60,4 +59,4 @@ async function getVaccines() {
 
 
 
-module.exports = {getVaccines, getVaccine}
+module.exports = {findAll, findByName}
