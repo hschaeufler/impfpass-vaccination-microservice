@@ -1,13 +1,19 @@
 const vaccinationRepository = require("../repository/VaccinationRepository");
-const { v4: uuidv4 } = require('uuid');
+const {v4: uuidv4, version: uuidVersion, validate: uuidValidate} = require('uuid');
 
-function validateVaccination(vaccination){
+
+function validateRegistrationId(registrationId) {
+    return uuidValidate(registrationId) && uuidVersion(registrationId) === 4;
+}
+
+function validateVaccinationClaim(vaccination) {
     return vaccination.registrationId
+        && validateRegistrationId(vaccination.registrationId)
         && vaccination.vaccinatedperson
         && vaccination.userid;
 }
 
-function validateVaccinationRegistration(vaccinationRegistration){
+function validateVaccinationRegistration(vaccinationRegistration) {
     return vaccinationRegistration.vaccine
         && vaccinationRegistration.disease
         && vaccinationRegistration.chargeNumber
@@ -16,10 +22,10 @@ function validateVaccinationRegistration(vaccinationRegistration){
         && vaccinationRegistration.doctorsId;
 }
 
-async function reportVaccinationRegistration(vaccinationRegistration){
+async function reportVaccinationRegistration(vaccinationRegistration) {
     console.log(vaccinationRegistration);
     const isValid = validateVaccinationRegistration(vaccinationRegistration);
-    if(!isValid){
+    if (!isValid) {
         throw "Vaccination-Registration is not Valid! Please fill all fields!";
     }
 
@@ -31,10 +37,10 @@ async function reportVaccinationRegistration(vaccinationRegistration){
     return vaccinationRegistration;
 }
 
-async function reportVaccinationClaim(vaccination){
-    const isValid = validateVaccination(vaccination);
-    if(!isValid){
-        throw "Vaccination is not Valid! Please fill all fields!";
+async function reportVaccinationClaim(vaccination) {
+    const isValid = validateVaccinationClaim(vaccination);
+    if (!isValid) {
+        throw "Vaccination is not Valid! Please try again!";
     }
 
     vaccination.uuid = uuidv4();
@@ -46,8 +52,8 @@ async function reportVaccinationClaim(vaccination){
 
 }
 
-async function getByVaccinationID(id){
-    if(!id){
+async function getByVaccinationID(id) {
+    if (!id) {
         throw "Please submit a valid id!";
     }
 
@@ -55,8 +61,8 @@ async function getByVaccinationID(id){
     return vaccination;
 }
 
-async function getByDoctorsId(doctorsId){
-    if(!doctorsId){
+async function getByDoctorsId(doctorsId) {
+    if (!doctorsId) {
         throw "Please submit a valid id!";
     }
 
@@ -64,8 +70,8 @@ async function getByDoctorsId(doctorsId){
     return vaccination;
 }
 
-async function getByUserId(userId){
-    if(!userId){
+async function getByUserId(userId) {
+    if (!userId) {
         throw "Please submit a valid UserId!";
     }
 
@@ -73,4 +79,10 @@ async function getByUserId(userId){
     return vaccination;
 }
 
-module.exports = {reportVaccinationClaim,reportVaccinationRegistration,getByVaccinationID, getByDoctorsId, getByUserId}
+module.exports = {
+    reportVaccinationClaim,
+    reportVaccinationRegistration,
+    getByVaccinationID,
+    getByDoctorsId,
+    getByUserId
+}

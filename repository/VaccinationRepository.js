@@ -4,16 +4,6 @@ var _ = require('lodash');
 const pool = db.createPool();
 const promisePool = pool.promise();
 
-/*    const vaccinationRegistration = {
-        uuid : result.uuid,
-        vaccine : result.vaccine,
-        chargeNumber: result.chargeNumber,
-        disease: result.disease,
-        location: result.location,
-        doctorsOffice: result.doctors_officename,
-        doctorsId: result.doctors_uiserid,
-        timestamp: result.timestamp
-    }*/
 
 function mapResultToVaccination(result) {
     const vaccination = {
@@ -25,7 +15,7 @@ function mapResultToVaccination(result) {
         timestamp: result.timestamp,
         doctorsOffice: result.doctors_officename,
         registrationId: result.registration_uuid,
-        doctorsId: result.doctors_uiserid,
+        doctorsId: result.doctors_userid,
         vaccinatedperson: result.vaccinatedperson_name,
         userid: result.vaccinatedperson_userid,
         registrationTimestamp: result.registration_timestap
@@ -41,7 +31,7 @@ const SELECT_VACCINATION_SQL_PART = "SELECT uuid, " +
     "timestamp, " +
     "doctors_officename, " +
     "registration_uuid, " +
-    "doctors_uiserid, " +
+    "doctors_userid, " +
     "vaccinatedperson_name, " +
     "vaccinatedperson_userid, " +
     "registration_timestap " +
@@ -53,7 +43,7 @@ async function findByDoctorsId(userID) {
 
     const connection = await promisePool.getConnection();
     try {
-        const SQL_QUERY = SELECT_VACCINATION_SQL_PART + "WHERE doctors_uiserid like ?";
+        const SQL_QUERY = SELECT_VACCINATION_SQL_PART + "WHERE doctors_userid like ?";
 
         const [results, fields] = await connection.execute(SQL_QUERY, values);
 
