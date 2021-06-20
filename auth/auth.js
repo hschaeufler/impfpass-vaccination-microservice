@@ -1,10 +1,9 @@
-const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const userService = require("../services/userservice");
 const {TOKEN_SECRET} = require("../utils/jwtutil");
-//const jwt = require('jsonwebtoken');
+
 
 const localLoginStrategy = new LocalStrategy({
         usernameField: 'mail',
@@ -16,7 +15,7 @@ const localLoginStrategy = new LocalStrategy({
                 return done(null, false, { message: 'Please submit Username and Password' });
             }
 
-            const user = await userService.getUser(username);
+            const user = await userService.getUserByMail(username);
 
             if (!user) {
                 console.log("user is unknown");
@@ -48,7 +47,7 @@ const JWTStrategy = new JwtStrategy(JWT_OPTIONS, async function(jwt_payload, don
 
     const user = jwt_payload;
 
-    const userFromDB = await userService.getUser(user.mail);
+    const userFromDB = await userService.getUserByMail(user.mail);
 
     if(!userFromDB){
             console.log("user is unknown");

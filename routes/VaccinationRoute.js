@@ -8,11 +8,11 @@ router.post('/registration', async function(req, res, next) {
         const vaccinationRegistrationRequest  = req.body;
 
         //todo: Entsprechende HTTP-Methode setzen
-        if(!authUser || authUser.role !== UserRole.doctor || !authUser.officename || !authUser.userid){
+        if(!authUser || authUser.role !== UserRole.doctor || !authUser.officeName || !authUser.userid){
             throw "User is not allowed to call Method!";
         }
 
-        vaccinationRegistrationRequest.doctorsOffice = authUser.officename;
+        vaccinationRegistrationRequest.doctorsOffice = authUser.officeName;
         vaccinationRegistrationRequest.doctorsId = authUser.userid;
         vaccinationRegistrationRequest.location = authUser.location ? authUser.location : "UNKNOWN";
 
@@ -36,7 +36,7 @@ router.post('/claim', async function(req, res, next) {
             throw "User is not allowed to call Method!";
         }
 
-        vaccinationClaim.vaccinatedperson = authUser.firstname +" " + authUser.lastname;
+        vaccinationClaim.vaccinatedperson = authUser.firstName +" " + authUser.lastName;
         vaccinationClaim.userid = authUser.userid;
 
         const vaccinationRegistration  = await vaccinationService.reportVaccinationClaim(vaccinationClaim);
