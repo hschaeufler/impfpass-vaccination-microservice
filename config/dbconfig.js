@@ -1,5 +1,5 @@
 const env = require('dotenv');
-env.config({ path: process.env.DB_CONFIG_PATH|| '../db.env' });
+env.config({ path: process.env.DB_CONFIG_PATH|| '../conf/db.env' });
 
 
 const DB_CONFIG = {

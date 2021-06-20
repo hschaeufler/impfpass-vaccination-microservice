@@ -1,45 +1,22 @@
-const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-const userService = require("../services/userservice");
 const {TOKEN_SECRET} = require("../utils/jwtutil");
+const {UserRole} = require("../model/Enum");
 
-
-const localLoginStrategy = new LocalStrategy({
-        usernameField: 'mail',
-        passwordField: 'password'
-    },
-    async function(username, password, done) {
-        try {
-            if(!username || !password) {
-                return done(null, false, { message: 'Please submit Username and Password' });
-            }
-
-            const user = await userService.getUserByMail(username);
-
-            if (!user) {
-                console.log("user is unknown");
-                return done(null, false, { message: 'User is unknown' });
-            }
-
-            const stringPassword = String(password);
-            const isAuth = await userService.checkUser(username,stringPassword);
-
-            if(!isAuth){
-                console.log("Password not valid!");
-                return done(null, false, { message: 'Password not valid!' });
-            }
-
-            return done(null, user);
-        } catch (exception){
-            return done(exception);
-        }
-    }
-);
 
 const JWT_OPTIONS = {
     jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey : TOKEN_SECRET
+}
+
+function validateUser(user){
+    return user
+        && user.userid
+        && user.mail
+        && user.firstName
+        && user.lastName
+        && user.location
+        && ((user.role === UserRole.doctor && user.officeName) || user.role === UserRole.user)
 }
 
 const JWTStrategy = new JwtStrategy(JWT_OPTIONS, async function(jwt_payload, done) {
@@ -47,9 +24,11 @@ const JWTStrategy = new JwtStrategy(JWT_OPTIONS, async function(jwt_payload, don
 
     const user = jwt_payload;
 
-    const userFromDB = await userService.getUserByMail(user.mail);
+    console.log(user);
 
-    if(!userFromDB){
+    //const userFromDB = await userService.getUserByMail(user.mail);
+
+    if(!validateUser(user)){
             console.log("user is unknown");
             return done(null, false, { message: 'User is unknown' });
     }
@@ -58,4 +37,4 @@ const JWTStrategy = new JwtStrategy(JWT_OPTIONS, async function(jwt_payload, don
 
 });
 
-module.exports = {localLoginStrategy, JWTStrategy};
+module.exports = {JWTStrategy};
