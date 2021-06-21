@@ -1,5 +1,6 @@
 const vaccinationRepository = require("../repository/VaccinationRepository");
 const {v4: uuidv4, version: uuidVersion, validate: uuidValidate} = require('uuid');
+const {sendMessage,topics} = require("./MessageService");
 
 
 function validateRegistrationId(registrationId) {
@@ -32,7 +33,7 @@ async function reportVaccinationRegistration(vaccinationRegistration) {
     vaccinationRegistration.uuid = uuidv4();
     vaccinationRegistration.timestamp = new Date();
 
-    //TODO: Call Kafka
+    await sendMessage(topics.registrationTopic, vaccinationRegistration);
 
     return vaccinationRegistration;
 }
@@ -46,7 +47,7 @@ async function reportVaccinationClaim(vaccination) {
     vaccination.uuid = uuidv4();
     vaccination.timestamp = new Date();
 
-    //TODO: Call Kafka
+    await sendMessage(topics.claimTopic, vaccination);
 
     return vaccination;
 

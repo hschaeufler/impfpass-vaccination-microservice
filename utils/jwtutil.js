@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
-
-const TOKEN_SECRET = "TOKENSECRET_TODO_AUSLAGERN";
+const TOKEN_SECRET = require("../config/jwtconfig");
 
 //see: https://www.digitalocean.com/community/tutorials/nodejs-jwt-expressjs
 function generateToken(value){
