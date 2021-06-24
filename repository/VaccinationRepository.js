@@ -34,7 +34,7 @@ const SELECT_VACCINATION_SQL_PART = "SELECT uuid, " +
     "doctors_userid, " +
     "vaccinatedperson_name, " +
     "vaccinatedperson_userid, " +
-    "registration_timestap " +
+    "registration_timestamp " +
     "FROM vaccination ";
 
 async function findByDoctorsId(userID) {
@@ -145,7 +145,7 @@ async function save(vaccination) {
         "doctors_uiserid, " +
         "vaccinatedperson_name, " +
         "vaccinatedperson_userid, " +
-        "registration_timestap) " +
+        "registration_timestamp) " +
         "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 
     const connection = await promisePool.getConnection();

@@ -1,6 +1,8 @@
 const vaccinationRepository = require("../repository/VaccinationRepository");
 const {v4: uuidv4, version: uuidVersion, validate: uuidValidate} = require('uuid');
 const {sendMessage,topics} = require("./MessageService");
+const CacheService = require("./CacheService");
+const DataBaseUtils = require("../utils/database");
 
 
 function validateRegistrationId(registrationId) {
@@ -24,11 +26,12 @@ function validateVaccinationRegistration(vaccinationRegistration) {
 }
 
 async function reportVaccinationRegistration(vaccinationRegistration) {
-    console.log(vaccinationRegistration);
     const isValid = validateVaccinationRegistration(vaccinationRegistration);
     if (!isValid) {
         throw "Vaccination-Registration is not Valid! Please fill all fields!";
     }
+
+//    const currentDateString = DataBaseUtils.toDateString(new Date());
 
     vaccinationRegistration.uuid = uuidv4();
     vaccinationRegistration.timestamp = new Date();
@@ -44,6 +47,8 @@ async function reportVaccinationClaim(vaccination) {
         throw "Vaccination is not Valid! Please try again!";
     }
 
+//    const currentDateString = DataBaseUtils.toDateString(new Date());
+
     vaccination.uuid = uuidv4();
     vaccination.timestamp = new Date();
 
@@ -58,7 +63,15 @@ async function getByVaccinationID(id) {
         throw "Please submit a valid id!";
     }
 
-    const vaccination = await vaccinationRepository.findByVaccinationId(id);
+    let vaccination = await CacheService.getFromCache(id);
+
+    if(!vaccination){
+        vaccination = await vaccinationRepository.findByVaccinationId(id);
+        if(vaccination){
+            await CacheService.addToCache(id,vaccination,CacheService.LIFETIMES.lifetimeVaccination)
+        }
+    }
+
     return vaccination;
 }
 
@@ -67,7 +80,14 @@ async function getByDoctorsId(doctorsId) {
         throw "Please submit a valid id!";
     }
 
-    const vaccination = await vaccinationRepository.findByDoctorsId(doctorsId);
+    let vaccination = await CacheService.getFromCache(doctorsId);
+    if(!vaccination){
+        vaccination = await vaccinationRepository.findByDoctorsId(doctorsId);
+        if(vaccination){
+            await CacheService.addToCache(doctorsId,vaccination,CacheService.LIFETIMES.lifetimeVacLIST)
+        }
+    }
+
     return vaccination;
 }
 
@@ -76,9 +96,18 @@ async function getByUserId(userId) {
         throw "Please submit a valid UserId!";
     }
 
-    const vaccination = await vaccinationRepository.findByUserId(userId);
+    let vaccination = await CacheService.getFromCache(userId);
+
+    if(!vaccination){
+        vaccination = await vaccinationRepository.findByUserId(userId);
+        if(vaccination){
+            await CacheService.addToCache(userId,vaccination,CacheService.LIFETIMES.lifetimeVacLIST)
+        }
+    }
+
     return vaccination;
 }
+
 
 module.exports = {
     reportVaccinationClaim,

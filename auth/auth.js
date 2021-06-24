@@ -20,13 +20,8 @@ function validateUser(user){
 }
 
 const JWTStrategy = new JwtStrategy(JWT_OPTIONS, async function(jwt_payload, done) {
-    console.log(jwt_payload);
 
     const user = jwt_payload;
-
-    console.log(user);
-
-    //const userFromDB = await userService.getUserByMail(user.mail);
 
     if(!validateUser(user)){
             console.log("user is unknown");

@@ -13,8 +13,6 @@ async function saveUser(user) {
 
     const VALUES = [user.mail,passwordHash,user.lastName, user.firstName ,user.role,officeName,user.location];
 
-    console.log(VALUES)
-
     const connection = await promisePool.getConnection();
     try {
         const [rows, fields] = await connection.execute("INSERT INTO  user (mail, password, lastname, firstname, role, officename, location) VALUES (?, ?, ?, ?, ?, ?, ?)", VALUES);

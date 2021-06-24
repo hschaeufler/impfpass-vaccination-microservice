@@ -1,10 +1,11 @@
 const env = require('dotenv');
-const {v4: uuidv4} = require('uuid');
 env.config({ path: process.env.KAKFA_CONFIG_PATH || '../conf/kafka.env' });
+
 
 const KAFKA_CONFIG = {
     kafkaBroker : process.env.KAFKA_BROKER || 'localhost:9092',
-    clientId: "impfpass-app-" + uuidv4(),
+    clientId: "impfpass-app-" +  Math.floor(Math.random() * 100000),
+    groupId: process.env.GROUP_ID || "IMPFPASS_APP_GROUP",
     //get Injected as environment-Vars
     topics : {
         claimTopic: process.env.CLAIM_TOPIC || "CLAIM-TOPIC",

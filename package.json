@@ -16,6 +16,8 @@
     "jsonwebtoken": "^8.5.1",
     "kafkajs": "^1.15.0",
     "lodash": "^4.17.21",
+    "luxon": "^1.27.0",
+    "memcache-plus": "^0.2.22",
     "mysql2": "^2.2.5",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
